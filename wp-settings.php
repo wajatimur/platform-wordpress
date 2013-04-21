@@ -17,6 +17,9 @@
  */
 define( 'WPINC', 'wp-includes' );
 
+/* Multisite */
+define('WP_ALLOW_MULTISITE', true);
+
 // Include files required for initialization.
 require( ABSPATH . WPINC . '/load.php' );
 require( ABSPATH . WPINC . '/default-constants.php' );
