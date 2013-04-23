@@ -21,7 +21,6 @@ if ( defined( 'SUNRISE' ) )
 ms_subdomain_constants();
 
 if ( !isset( $current_site ) || !isset( $current_blog ) ) {
-
 	$domain = addslashes( $_SERVER['HTTP_HOST'] );
 	if ( false !== strpos( $domain, ':' ) ) {
 		if ( substr( $domain, -3 ) == ':80' ) {
@@ -30,6 +29,10 @@ if ( !isset( $current_site ) || !isset( $current_blog ) ) {
 		} elseif ( substr( $domain, -4 ) == ':443' ) {
 			$domain = substr( $domain, 0, -4 );
 			$_SERVER['HTTP_HOST'] = substr( $_SERVER['HTTP_HOST'], 0, -4 );
+        } else if( defined( 'WP_CUSTOM_PORT' ) && substr( $domain, 0 - ( strlen( WP_CUSTOM_PORT ) + 1 ) == ':' . WP_CUSTOM_PORT ) ) {
+            $colonpos = 0 - ( strlen( WP_CUSTOM_PORT ) + 1 );
+            $domain = substr( $domain, 0, $colonpos );
+            $_SERVER['HTTP_HOST'] = substr( $_SERVER['HTTP_HOST'], 0, $colonpos );
 		} else {
 			wp_load_translations_early();
 			wp_die( __( 'Multisite only works without the port number in the URL.' ) );
