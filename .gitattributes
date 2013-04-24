@@ -1,0 +1,4 @@
+wp-admin/network.php merge=ours
+wp-includes/ms-settings.php merge=ours
+wp-settings.php merge=ours
+wp-content/* merge=ours
