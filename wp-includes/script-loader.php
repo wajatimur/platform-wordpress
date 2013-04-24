@@ -75,9 +75,6 @@ function wp_default_scripts( &$scripts ) {
 
 	$scripts->add( 'quicktags', "/wp-includes/js/quicktags$suffix.js", array(), false, 1 );
 	did_action( 'init' ) && $scripts->localize( 'quicktags', 'quicktagsL10n', array(
-		'wordLookup' => __('Enter a word to look up:'),
-		'dictionaryLookup' => esc_attr(__('Dictionary lookup')),
-		'lookup' => esc_attr(__('lookup')),
 		'closeAllOpenTags' => esc_attr(__('Close all open tags')),
 		'closeTags' => esc_attr(__('close tags')),
 		'enterURL' => __('Enter the URL'),
@@ -392,6 +389,8 @@ function wp_default_scripts( &$scripts ) {
 			'publishOn' => __('Publish on:'),
 			'publishOnFuture' =>  __('Schedule for:'),
 			'publishOnPast' => __('Published on:'),
+			/* translators: 1: month, 2: day, 3: year, 4: hour, 5: minute */
+			'dateFormat' => __('%1$s %2$s, %3$s @ %4$s : %5$s'),
 			'showcomm' => __('Show more comments'),
 			'endcomm' => __('No more comments found.'),
 			'publish' => __('Publish'),

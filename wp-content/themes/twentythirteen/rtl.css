@@ -323,19 +323,6 @@ div.nav-menu > ul {
  * ----------------------------------------------------------------------------
  */
 
-.format-aside .entry-content .date {
-	margin-left: auto;
-	margin-right: 20px;
-}
-
-.format-aside .entry-content .date a:before {
-	content: normal;
-}
-
-.format-aside .entry-content .date a:after {
-	content: "\f303";
-}
-
 .format-aside cite:before {
 	content: normal;
 	margin-right: auto;
@@ -550,7 +537,7 @@ div.nav-menu > ul {
 	padding-right: 60px;
 }
 
-.author-avatar {
+.author-avatar .avatar {
 	float: right;
 	margin: 0 0 30px 30px;
 }
@@ -602,12 +589,10 @@ div.nav-menu > ul {
 }
 
 .comment-author {
+	float: right;
 	margin-left: 50px;
 	margin-right: auto;
-	left: auto;
-	right: 0;
 }
-
 
 .bypostauthor .fn:before {
 	content: normal;
@@ -624,7 +609,7 @@ div.nav-menu > ul {
 	margin-right: 20px;
 }
 
-.comment-meta,
+.comment-metadata,
 .comment-content,
 .reply {
 	float: left;

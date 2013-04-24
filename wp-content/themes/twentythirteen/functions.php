@@ -224,7 +224,7 @@ function twentythirteen_scripts_styles() {
 		wp_enqueue_script( 'jquery-masonry' );
 
 	// Loads JavaScript file with functionality specific to Twenty Thirteen.
-	wp_enqueue_script( 'twentythirteen-script', get_template_directory_uri() . '/js/functions.js', array( 'jquery' ), '20130416', true );
+	wp_enqueue_script( 'twentythirteen-script', get_template_directory_uri() . '/js/functions.js', array( 'jquery' ), '20130423', true );
 
 	// Loads our main stylesheet.
 	wp_enqueue_style( 'twentythirteen-style', get_stylesheet_uri() );
@@ -375,7 +375,7 @@ function twentythirteen_entry_meta() {
 	if ( is_sticky() && is_home() && ! is_paged() )
 		echo '<span class="featured-post">' . __( 'Sticky', 'twentythirteen' ) . '</span>';
 
-	if ( ! has_post_format( 'aside' ) && ! has_post_format( 'link' ) && 'post' == get_post_type() )
+	if ( ! has_post_format( 'link' ) && 'post' == get_post_type() )
 		twentythirteen_entry_date();
 
 	// Translators: used between list items, there is a space after the comma.
@@ -527,23 +527,6 @@ function twentythirteen_video_width( $atts ) {
 }
 add_action( 'embed_defaults',       'twentythirteen_video_width' );
 add_action( 'shortcode_atts_video', 'twentythirteen_video_width' );
-
-/**
- * Adds entry date to aside posts after the content.
- *
- *
- * @since Twenty Thirteen 1.0
- *
- * @param string $content Post content.
- * @return string Post content.
- */
-function twentythirteen_aside_date( $content ) {
-	if ( ! is_feed() && has_post_format( 'aside' ) ) {
-		$content .= twentythirteen_entry_date( false );
-	}
-	return $content;
-}
-add_filter( 'the_content', 'twentythirteen_aside_date', 8 ); // After embeds, before everything else.
 
 /**
  * Switches default core markup for search form to output valid HTML5.

@@ -3399,6 +3399,7 @@ td.plugin-title p {
 	width: 450px;
 	margin-left: -225px;
 	background: #fff;
+	line-height: 1.5;
 	z-index: 1000005;
 }
 
@@ -3425,14 +3426,22 @@ td.plugin-title p {
 
 #notification-dialog .post-locked-avatar {
 	float: left;
-	margin-right: 20px;
+	margin: 0 20px 20px 0;
 }
 
-#notification-dialog .currently-editing {
-	margin-bottom: 20px;
+#notification-dialog .wp-tab-first {
 	outline: 0;
 }
 
+#notification-dialog .locked-saving img {
+	float: left;
+	margin-right: 3px;
+}
+
+#notification-dialog-wrap.saving .locked-saving,
+#notification-dialog-wrap.saved .locked-saved {
+	display: inline;
+}
 
 /*------------------------------------------------------------------------------
   11.1 - Custom Fields
@@ -3986,6 +3995,8 @@ body .ui-tooltip {
 	margin-bottom: 20px;
 }
 
+.wp-format-aside #titlewrap,
+.wp-format-status #titlewrap,
 .wp-format-aside .wp-media-buttons .insert-media,
 .wp-format-status .wp-media-buttons .insert-media {
 	display: none;
@@ -5504,6 +5515,11 @@ h3.available-themes {
 	padding-bottom: 10px;
 }
 
+.theme-options .load-customize {
+	margin-right: 30px;
+	float: left;
+}
+
 .theme-options span {
 	float: left;
 	margin-right: 10px;
@@ -5513,8 +5529,7 @@ h3.available-themes {
 	color: #999;
 }
 
-.theme-options ul,
-.theme-options .load-customize {
+.theme-options ul {
 	float: left;
 	margin: 0;
 }
@@ -6444,8 +6459,7 @@ body.full-overlay-active {
 .no-customize-support.wp-core-ui .hide-if-no-customize,
 .no-customize-support .wp-core-ui .hide-if-no-customize,
 .customize-support.wp-core-ui .hide-if-customize,
-.customize-support .wp-core-ui .hide-if-customize,
-.no-customize-support .theme-options ul li:first-child {
+.customize-support .wp-core-ui .hide-if-customize {
 	display: none;
 }
 

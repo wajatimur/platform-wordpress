@@ -11,12 +11,12 @@
  *
  * @since 3.1.0
  *
- * @param int|object $post A post.
- *
- * @return mixed The format if successful. False if no format is set. WP_Error if errors.
+ * @param int|object $post Post ID or post object. Optional, default is the current post from the loop.
+ * @return mixed The format if successful. False otherwise.
  */
 function get_post_format( $post = null ) {
-	$post = get_post($post);
+	if ( ! $post = get_post( $post ) )
+		return false;
 
 	if ( ! post_type_supports( $post->post_type, 'post-formats' ) )
 		return false;
@@ -28,7 +28,7 @@ function get_post_format( $post = null ) {
 
 	$format = array_shift( $_format );
 
-	return ( str_replace('post-format-', '', $format->slug ) );
+	return str_replace('post-format-', '', $format->slug );
 }
 
 /**
@@ -347,9 +347,6 @@ function post_formats_compat( $content, $id = 0 ) {
 
 	switch ( $format ) {
 		case 'link':
-			$compat['tag'] = '';
-			$compat['position'] = 'before';
-
 			if ( ! empty( $meta['link_url'] ) ) {
 				$esc_url = preg_quote( $meta['link_url'], '#' );
 				// Make sure the same URL isn't in the post (modified/extended versions allowed)
@@ -380,12 +377,17 @@ function post_formats_compat( $content, $id = 0 ) {
 				$image = is_numeric( $meta['image'] ) ? wp_get_attachment_url( $meta['image'] ) : $meta['image'];
 
 				if ( ! empty( $image ) && ! stristr( $content, $image ) ) {
-					$image_html = sprintf(
-						'<img %ssrc="%s" alt="" />',
-						empty( $compat['image_class'] ) ? '' : sprintf( 'class="%s" ', esc_attr( $compat['image_class'] ) ),
-						$image
-					);
-					if ( empty( $meta['url'] ) ) {
+					if ( false === strpos( $image, '<a ' ) ) {
+						$image_html = sprintf(
+							'<img %ssrc="%s" alt="" />',
+							empty( $compat['image_class'] ) ? '' : sprintf( 'class="%s" ', esc_attr( $compat['image_class'] ) ),
+							$image
+						);
+					} else {
+						$image_html = $image;
+					}
+
+					if ( empty( $meta['url'] ) || false !== strpos( $image, '<a ' ) ) {
 						$format_output .= $image_html;
 					} else {
 						$format_output .= sprintf(
@@ -686,7 +688,7 @@ function the_post_format_chat() {
  *
  * @param string $content A string which might contain chat data, passed by reference.
  * @param bool $remove (optional) Whether to remove the quote from the content.
- * @param string $replace (optional) Content to replace the quote content with if $remove is set to true.
+ * @param string $replace (optional) Content to replace the quote content with.
  * @return string The quote content.
  */
 function get_content_quote( &$content, $remove = false, $replace = '' ) {
@@ -930,4 +932,72 @@ function the_remaining_content( $more_link_text = null, $strip_teaser = false ) 
 	add_filter( 'the_content', 'post_formats_compat', 7 );
 
 	echo str_replace( ']]>', ']]&gt;', $content );
+}
+
+/**
+ * Don't display post titles for asides and status posts on the front end.
+ *
+ * @since 3.6.0
+ * @access private
+ */
+function _post_formats_title( $title, $post_id ) {
+	if ( is_admin() || is_feed() || ! in_array( get_post_format( $post_id ), array( 'aside', 'status' ) ) )
+		return $title;
+
+	// Return an empty string only if the title is auto-generated.
+	$post = get_post( $post_id );
+	if ( $title == _post_formats_generate_title( $post->post_content, get_post_format( $post_id ) ) )
+		$title = '';
+
+	return $title;
+}
+
+/**
+ * Generate a title from the post content or format.
+ *
+ * @since 3.6.0
+ * @access private
+ */
+function _post_formats_generate_title( $content, $post_format = '' ) {
+	$title = wp_trim_words( strip_shortcodes( $content ), 8, '' );
+
+	if ( empty( $title ) )
+		$title = get_post_format_string( $post_format );
+
+	return $title;
+}
+
+/**
+ * Runs during save_post, fixes empty titles for asides and statuses.
+ *
+ * @since 3.6.0
+ * @access private
+ */
+function _post_formats_fix_empty_title( $data, $postarr ) {
+	if ( 'auto-draft' == $data['post_status'] || ! post_type_supports( $data['post_type'], 'post-formats' ) )
+		return $data;
+
+	$post_id = ( isset( $postarr['ID'] ) ) ? absint( $postarr['ID'] ) : 0;
+
+	if ( $post_id )
+		$post_format = get_post_format( $post_id );
+
+	if ( isset( $postarr['post_format'] ) )
+		$post_format = ( in_array( $postarr['post_format'], get_post_format_slugs() ) ) ? $postarr['post_format'] : '';
+
+	if ( ! in_array( $post_format, array( 'aside', 'status' ) ) )
+		return $data;
+
+	if ( $data['post_title'] == _post_formats_generate_title( $data['post_content'], $post_format ) )
+		return $data;
+
+	// If updating an existing post, check whether the title was auto-generated.
+	if ( $post_id && $post = get_post( $post_id ) )
+		if ( $post->post_title == $data['post_title'] && $post->post_title == _post_formats_generate_title( $post->post_content, get_post_format( $post->ID ) ) )
+			$data['post_title'] = '';
+
+	if ( empty( $data['post_title'] ) )
+		$data['post_title'] = _post_formats_generate_title( $data['post_content'], $post_format );
+
+	return $data;
 }
